@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7904d07d1e1765a0a199aa11d6301a3",
+    "content-hash": "6137e71e4d81ee8f2e06b8b478f3c73e",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -355,6 +355,45 @@
                 "trusted proxy"
             ],
             "time": "2017-06-15T17:19:42+00:00"
+        },
+        {
+            "name": "icharle/alipaytool",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/icharle/alipayTool.git",
+                "reference": "c9832b2f5f3955fba4d0c9802a0c6e6782d1be0d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/icharle/alipayTool/zipball/c9832b2f5f3955fba4d0c9802a0c6e6782d1be0d",
+                "reference": "c9832b2f5f3955fba4d0c9802a0c6e6782d1be0d",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Icharle\\Alipaytool\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "icharle",
+                    "email": "icharle@live.com"
+                }
+            ],
+            "description": "支付宝授权信息接口及授权令牌接口",
+            "time": "2019-03-10T17:52:01+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -4537,7 +4576,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "icharle/alipaytool": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
