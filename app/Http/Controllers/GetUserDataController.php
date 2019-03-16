@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Icharle\Alipaytool\Alipaytool;
+use App\UserDataModel;
 use Illuminate\Http\Request;
+use Icharle\Alipaytool\Alipaytool;
 
-class TestController extends Controller
+class GetUserDataController extends Controller
 {
     /**
      * 支付宝授权登录尝试
@@ -36,7 +37,19 @@ class TestController extends Controller
         if (isset($alipay_user_info_share_response['code']) && $alipay_user_info_share_response['code']==40006 ){
             exit('ISV权限不足，建议在开发者中心检查对应功能是否已经添加');
         }
-        echo $alipay_user_info_share_response['user_id'];
+
+        $usermsg = UserDataModel::create(
+            [
+                'user_id' => $alipay_user_info_share_response['user_id'],
+                'nick_name' => $alipay_user_info_share_response['nick_name'],
+                'avatar' => $alipay_user_info_share_response['avatar'],
+            ]
+        );
+        if (isset($usermsg)){
+            return response()->json('20001');
+        }
+
+
         /**
          * 执行成功后 $alipay_user_info_share_response => 可以得到如下(按照需要存入数据库中)
          * "code" => "10000"

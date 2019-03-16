@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +16,23 @@ use Illuminate\Http\Request;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::group(['middleware'=>'api'],function(){
+    Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
+    Route::any('ExamTitle',['uses'=>'ExaminationController@ExamTitle']);
+    Route::any('QuestionsData',['uses'=>'ExaminationController@QuestionsData']);
+    Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
+    Route::any('Charts',['uses'=>'ExaminationController@Charts']);
+});
+
+
+// 给需要跨域的路由增加cors中间件
+Route::group(['middleware' => 'cors'], function(Router $router){
+    Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
+    Route::any('ExamTitle',['uses'=>'ExaminationController@ExamTitle']);
+    Route::any('QuestionsData',['uses'=>'ExaminationController@QuestionsData']);
+    Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
+    Route::any('Charts',['uses'=>'ExaminationController@Charts']);
+
 });

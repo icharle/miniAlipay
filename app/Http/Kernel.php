@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+       // \Barryvdh\Cors\HandleCors::class,
     ];
 
     /**
@@ -56,6 +57,7 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'cors'=>\Barryvdh\Cors\HandleCors::class,// install laravel-cros 增加cors中间件，解决跨域问题
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }

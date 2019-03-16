@@ -15,3 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('test','TestController@test');
+
+Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
+Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
