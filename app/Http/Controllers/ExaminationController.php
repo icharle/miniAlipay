@@ -22,6 +22,7 @@ use App\XxxtModel;
 use App\XxxtxmModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ExaminationController extends Controller
 {
@@ -92,10 +93,10 @@ class ExaminationController extends Controller
     {
         $data = $request->all();
         $field = $data['field'];
-        $user_id=$data['user_id'];
+        $userInfo = Auth::guard('api')->user();
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$user_id)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -288,11 +289,11 @@ class ExaminationController extends Controller
         $questionid=$questiondata['id'];
 //        $field=$questiondata['field'];
         $rjsj_type=$questiondata['rjsjtype'];
-        $user_id=$questiondata['user_id'];
+        $userInfo = Auth::guard('api')->user();
 
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$user_id)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -405,11 +406,11 @@ class ExaminationController extends Controller
         $errorques=$request['errorquestions']; //错题题号
         $score=$request['score'];//总分
         $field=$request['field'];//套题编号
-        $user_id=$data['user_id'];//用户id
+        $userInfo = Auth::guard('api')->user();//用户id
         $errorcount=$data['errorcount'];//错题数目
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$user_id)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -421,7 +422,7 @@ class ExaminationController extends Controller
         }
 
         $stats=StatsModel::create([
-            'user_id'=>$user_id,
+            'user_id'=>$userInfo,
             'statistical_error' => $errorques,
             'field'=>$field,
             'error_count'=>$errorcount,

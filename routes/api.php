@@ -18,6 +18,22 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::prefix('auth')->group(function($router) {
+    $router->post('login', 'AuthController@login');
+    $router->get('test', 'AuthController@test');
+    $router->post('CountDown', 'ExaminationController@CountDown');
+    $router->get('ExamTitle', 'ExaminationController@QuestionsData');
+    $router->post('QuestionsData', 'ExaminationController@QuestionsData');
+    $router->get('ChoiceJudge', 'ExaminationController@ChoiceJudge');
+    $router->post('Charts', 'ExaminationController@Charts');
+    $router->get('ScoreStats', 'ExaminationController@ScoreStats');
+    $router->get('Personal', 'ExaminationController@Personal');
+});
+
+Route::middleware('refresh.token')->group(function($router) {
+    $router->get('profile','UserController@profile');
+});
+
 Route::group(['middleware'=>'api'],function(){
     Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
     Route::any('ExamTitle',['uses'=>'ExaminationController@ExamTitle']);

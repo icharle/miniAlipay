@@ -59,5 +59,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'cors'=>\Barryvdh\Cors\HandleCors::class,// install laravel-cros 增加cors中间件，解决跨域问题
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'refresh.token' => 'App\Http\Middleware\RefreshToken',
     ];
 }
