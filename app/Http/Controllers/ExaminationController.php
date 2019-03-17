@@ -26,6 +26,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ExaminationController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('refresh.token', ['except' => ['login']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
+    }
+
     //倒计时 统计受欢迎题目排行
     public function CountDown()
     {
