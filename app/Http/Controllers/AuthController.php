@@ -57,7 +57,9 @@ class AuthController extends Controller
 
         $token = Auth::guard('api')->fromUser($usermsg);
 
-        return response()->json('token', 'Bearer ' . $token);
+        return response()->json([
+            'token' => "Bearer " . $token
+        ]);
 
         /**
          * 执行成功后 $alipay_user_info_share_response => 可以得到如下(按照需要存入数据库中)
