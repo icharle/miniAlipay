@@ -24,6 +24,8 @@ Route::group(['middleware'=>'api'],function(){
     Route::any('QuestionsData',['uses'=>'ExaminationController@QuestionsData']);
     Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
     Route::any('Charts',['uses'=>'ExaminationController@Charts']);
+    Route::any('ScoreStats',['uses'=>'ExaminationController@ScoreStats']);
+    Route::any('Personal',['uses'=>'AuthController@Personal']);
 });
 
 

@@ -72,9 +72,12 @@ class AuthController extends Controller
     public function Personal(Request $request){
         $data=$request->all();
         $newtype=$data['type'];
-        $usermsg=User::where('user_id','=',101)->update(
+        $usermsg=User::where('user_id','=',10000)->update(
             ['type'=>$newtype]
         );
+        if ($usermsg){
+            return response()->json('50001');
+        }
     }
 
 }

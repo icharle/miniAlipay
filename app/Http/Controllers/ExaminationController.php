@@ -35,6 +35,7 @@ class ExaminationController extends Controller
         $sub2 = ceil(($examtime2 - $pretime) / 86400);
         $middate = strtotime('2019-06-01 00:00:00');
 
+
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录各自总值
         $charts=StatsModel::select(DB::raw('count(*) as count'))
             ->groupBy('field')
@@ -81,6 +82,9 @@ class ExaminationController extends Controller
         }
 
     }
+
+
+
 
 
     //根据用户type列出对应的试题数据
@@ -272,6 +276,10 @@ class ExaminationController extends Controller
     }
 
 
+
+
+
+
     //选择题判断
     public function ChoiceJudge(Request $request)
     {
@@ -279,6 +287,7 @@ class ExaminationController extends Controller
         $choice=$questiondata['option'];
         $questionid=$questiondata['id'];
 //        $field=$questiondata['field'];
+        $rjsj_type=$questiondata['rjsjtype'];
         $user_id=$questiondata['user_id'];
 
 
@@ -374,13 +383,55 @@ class ExaminationController extends Controller
                 }
             }
         }
-dd($str);
+
         if($choice==$str){
             //选择正确，返回'10001'
             return response()->json('10004');
         }else{
             //选择错误，返回'10002'
             return response()->json('10005');
+        }
+    }
+
+
+
+
+
+
+
+    //试卷提交，做题情况入库
+    public function ScoreStats(Request $request){
+        $data=$request->all();
+        $errorques=$request['errorquestions']; //错题题号
+        $score=$request['score'];//总分
+        $field=$request['field'];//套题编号
+        $user_id=$data['user_id'];//用户id
+        $errorcount=$data['errorcount'];//错题数目
+
+        //查找用户type id
+        $type_id=User::where('user_id','=',$user_id)->get(['type']);
+        //转字符串
+        $typecnt=0;
+        if ($type_id){
+            foreach ($type_id as $value){
+                if ($typecnt==0){
+                    $type=$value->type;
+                }
+            }
+        }
+
+        $stats=StatsModel::create([
+            'user_id'=>$user_id,
+            'statistical_error' => $errorques,
+            'field'=>$field,
+            'error_count'=>$errorcount,
+            'score'=>$score,
+        ]);
+
+        if($stats){
+            return response()->json('30001');
+        }else{
+            return response()->json('30002');
         }
     }
 
