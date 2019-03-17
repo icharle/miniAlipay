@@ -306,10 +306,14 @@ class ExaminationController extends Controller
 
         //查找试题信息
         if ($type=='rjsj'){
-            //查找上午试题信息
-            $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
-            //查找下午试题信息
-//            $optiondata = AfternoonModel::where('id','=',$questionid)->get(['answer']);
+            if ($rjsj_type=='morning'){
+                //查找上午试题信息
+                $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
+            }if ($rjsj_type=='afternoon'){
+                //查找下午试题信息
+                $optiondata = AfternoonModel::where('id','=',$questionid)->get(['answer']);
+            }
+
         }
 
         if ($type=='dzsw'){
