@@ -40,22 +40,34 @@ class ExaminationController extends Controller
         $sub = ceil(($examtime1 - $pretime) / 86400);
         $sub2 = ceil(($examtime2 - $pretime) / 86400);
         $middate = strtotime('2019-06-01 00:00:00');
-
+        $userInfo = Auth::guard('api')->user();
+        //查找用户type id
+        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
+        //转字符串
+        $typecnt=0;
+        if ($type_id){
+            foreach ($type_id as $value){
+                if ($typecnt==0){
+                    $type=$value->type;
+                }
+            }
+        }
 
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录各自总值
-        $charts=StatsModel::select(DB::raw('count(*) as count'))
+        $charts=StatsModel::where('type','=',$type)->select(DB::raw('count(*) as count'))
             ->groupBy('field')
             ->orderBy('count','desc')
             ->limit(5)->get();
 
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录的试卷号
-        $chartsmax=StatsModel::select('field')
+        $chartsmax=StatsModel::where('type','=',$type)->select('field')
             ->groupBy('field')
             ->orderBy(DB::raw('count(*)'),'desc')
             ->limit(5)
             ->get();
 
         //返回热度前五&倒计时天数
+
         if ($middate > $pretime) {
             if(isset($chartsmax)){
                 return response()->json([
