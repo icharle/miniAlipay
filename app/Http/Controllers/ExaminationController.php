@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\AfternoonModel;
 use App\DzswModel;
 use App\ExaminationModel;
-
 use App\MediaModel;
 use App\QrsModel;
 use App\RjpcsModel;
@@ -12,6 +11,7 @@ use App\SjkModel;
 use App\StatsModel;
 use App\User;
 use App\WlghModel;
+use App\WlModel;
 use App\XtfxModel;
 use App\XtghModel;
 use App\XtjcModel;
@@ -47,20 +47,39 @@ class ExaminationController extends Controller
             ->orderBy(DB::raw('count(*)'),'desc')
             ->limit(5)
             ->get();
-        //返回热度前五
-        if ($chartsmax){
-            return response()->json($chartsmax);
-        }
-        //暂无记录时返回空
-        if (!isset($chartsmax)){
-            return response()->json();
-        }
-        //返回倒计时天数
+
+        //返回热度前五&倒计时天数
         if ($middate > $pretime) {
-            return response()->json($sub);
+            if(isset($chartsmax)){
+                return response()->json([
+                    'countdown'=>$sub,
+                    'maxfield'=>$chartsmax,
+                    'fieldcount'=>$charts
+                ]);
+            }else{
+                return response()->json([
+                    'countdown'=>$sub,
+                    'maxfield'=>'',
+                    'fieldcount'=>''
+                ]);
+            }
+
         } else {
-            return response()->json($sub2);
+            if(isset($chartsmax)){
+                return response()->json([
+                    'countdown'=>$sub2,
+                    'maxfield'=>$chartsmax,
+                    'fieldcount'=>$charts
+                ]);
+            }else{
+                return response()->json([
+                    'countdown'=>$sub2,
+                    'maxfield'=>'',
+                    'fieldcount'=>''
+                ]);
+            }
         }
+
     }
 
 
@@ -105,70 +124,70 @@ class ExaminationController extends Controller
          */
 
         //查找试题信息
-        if ($type='rjsj'){
+        if ($type=='rjsj'){
             //查找上午试题信息
             $ques_content = ExaminationModel::where('field', '=', $field)->get(['id', 'question', 'questionImg', 'optiona', 'optionb', 'optionc', 'optiond', 'answer', 'answeranalysis']);
             //查找下午试题信息
             $aftques_content = AfternoonModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='dzsw'){
+        elseif ($type=='dzsw'){
             $ques_content = DzswModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='media'){
+        elseif ($type=='media'){
             $ques_content = MediaModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='qrs'){
+        elseif ($type=='qrs'){
             $ques_content = QrsModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='rjpcs'){
+        elseif ($type=='rjpcs'){
             $ques_content = RjpcsModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='sjk'){
+        elseif ($type=='sjk'){
             $ques_content = SjkModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='wlgh'){
+        elseif ($type=='wlgh'){
             $ques_content = WlghModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='wl'){
-            $ques_content = WlghModel::where('field', '=', $field)->get();
+        elseif ($type=='wl'){
+            $ques_content = WlModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xtfx'){
+        elseif ($type=='xtfx'){
             $ques_content = XtfxModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xtgh'){
+        elseif ($type=='xtgh'){
             $ques_content = XtghModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xtjc'){
+        elseif ($type=='xtjc'){
             $ques_content = XtjcModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xtjg'){
+        elseif ($type=='xtjg'){
             $ques_content = XtjgModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xxaq'){
+        elseif ($type=='xxaq'){
             $ques_content = XxaqModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xx'){
+        elseif ($type=='xx'){
             $ques_content = XxModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xxxt'){
+        elseif ($type=='xxxt'){
             $ques_content = XxxtModel::where('field', '=', $field)->get();
         }
 
-        elseif ($type='xxxtxm'){
+        elseif ($type=='xxxtxm'){
             $ques_content = XxxtxmModel::where('field', '=', $field)->get();
         }
 
@@ -247,11 +266,8 @@ class ExaminationController extends Controller
                 return response()->json(["message"=>$all]);
             }
         }else{
-            return response()->json('20003');
+            return response()->json();
         }
-
-
-
 
     }
 
@@ -262,11 +278,92 @@ class ExaminationController extends Controller
         $questiondata = $request->all();
         $choice=$questiondata['option'];
         $questionid=$questiondata['id'];
-        $field=$questiondata['field'];
-  //      $user_id=$questiondata['user_id'];
+//        $field=$questiondata['field'];
+        $user_id=$questiondata['user_id'];
+
+
+        //查找用户type id
+        $type_id=User::where('user_id','=',$user_id)->get(['type']);
+        //转字符串
+        $typecnt=0;
+        if ($type_id){
+            foreach ($type_id as $value){
+                if ($typecnt==0){
+                    $type=$value->type;
+                }
+            }
+        }
+
+        //查找试题信息
+        if ($type=='rjsj'){
+            //查找上午试题信息
+            $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
+            //查找下午试题信息
+//            $optiondata = AfternoonModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='dzsw'){
+            $optiondata = DzswModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=="media"){
+            $optiondata = MediaModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='qrs'){
+            $optiondata= QrsModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='rjpcs'){
+            $optiondata = RjpcsModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='sjk'){
+            $optiondata = SjkModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='wlgh'){
+            $optiondata = WlghModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=="wl"){
+            $optiondata = WlModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xtfx'){
+            $optiondata = XtfxModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xtgh'){
+            $optiondata = XtghModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xtjc'){
+            $optiondata = XtjcModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xtjg'){
+            $optiondata = XtjgModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xxaq'){
+            $optiondata = XxaqModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xx'){
+            $optiondata = XxModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xxxt'){
+            $optiondata = XxxtModel::where('id','=',$questionid)->get(['answer']);
+        }
+
+        if ($type=='xxxtxm'){
+            $optiondata = XxxtxmModel::where('id','=',$questionid)->get(['answer']);
+        }
 
         //获取提交的选择
-        $optiondata=ExaminationModel::where('id','=',$questionid)->get(['answer']);
+   //     $optiondata=ExaminationModel::where('id','=',$questionid)->get(['answer']);
 
         $str = "";
         $cnt = 0;
@@ -277,31 +374,7 @@ class ExaminationController extends Controller
                 }
             }
         }
-        //错题题号统计
-
-        if ($choice!=$str){
-            $str1 = "";
-            $cnt1 = 0;
-            foreach (array($questionid) as $value) {
-                if ($cnt1 == 0) {
-                    $str1 = $value;
-                } else {
-                    $str1 = $str1 . ',' . $value;
-                }
-                $cnt1++;
-            }
-
-            $score=75-$cnt1;
-
-            //存数据库;
-            $stats=new StatsModel();
-            $stats->statistical_error=$str1;
-            $stats->error_count=$cnt1;
-            $stats->score=$score;
-            $stats->field=$field;
-            $stats->save();
-        }
-
+dd($str);
         if($choice==$str){
             //选择正确，返回'10001'
             return response()->json('10004');
@@ -309,11 +382,6 @@ class ExaminationController extends Controller
             //选择错误，返回'10002'
             return response()->json('10005');
         }
-    }
-
-    //统计个人做题情况
-    public function Personal(){
-
     }
 
 }
