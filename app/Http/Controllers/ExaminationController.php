@@ -42,7 +42,7 @@ class ExaminationController extends Controller
         $middate = strtotime('2019-06-01 00:00:00');
         $userInfo = Auth::guard('api')->user();
         //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -113,7 +113,7 @@ class ExaminationController extends Controller
         $userInfo = Auth::guard('api')->user();
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -260,7 +260,7 @@ class ExaminationController extends Controller
 
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -273,8 +273,8 @@ class ExaminationController extends Controller
 
         //查找试题信息
         if ($type=='rjsj'){
-                //查找上午试题信息
-                $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
+            //查找上午试题信息
+            $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
         }
 
         if ($type=='dzsw'){
@@ -338,7 +338,7 @@ class ExaminationController extends Controller
         }
 
         //获取提交的选择
-   //     $optiondata=ExaminationModel::where('id','=',$questionid)->get(['answer']);
+        //     $optiondata=ExaminationModel::where('id','=',$questionid)->get(['answer']);
 
         $str = "";
         $cnt = 0;
@@ -375,7 +375,7 @@ class ExaminationController extends Controller
         $errorcount=$data['errorcount'];//错题数目
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
