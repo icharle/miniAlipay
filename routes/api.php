@@ -20,7 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('auth')->group(function($router) {
     $router->post('login', 'AuthController@login');
-    $router->get('test', 'AuthController@test');
     $router->get('CountDown', 'ExaminationController@CountDown');
     $router->post('QuestionsData', 'ExaminationController@QuestionsData');
     $router->get('ChoiceJudge', 'ExaminationController@ChoiceJudge');

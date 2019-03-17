@@ -16,17 +16,18 @@ class AuthController extends Controller
      *      40006  => ISV权限不足，建议在开发者中心检查对应功能是否已经添加
      *      10000  => 请求成功
      */
-    function __construct(){
-        $this->middleware('refresh.token',['except' => ['login']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
+    function __construct()
+    {
+        $this->middleware('refresh.token', ['except' => ['login']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
     }
 
     public function login(Request $request)
     {
-        $data=$request->all();
-        $authtoken=$data['authCode'];
+        $data = $request->all();
+        $authtoken = $data['authCode'];
         $app = new Alipaytool();
         $alipay_system_oauth_token_response = $app::getAccessToken($authtoken);
-        if (isset($alipay_system_oauth_token_response['code']) && $alipay_system_oauth_token_response['code']==40002 ){
+        if (isset($alipay_system_oauth_token_response['code']) && $alipay_system_oauth_token_response['code'] == 40002) {
             exit('授权码code无效');
         }
         echo $alipay_system_oauth_token_response['access_token'];
@@ -41,7 +42,7 @@ class AuthController extends Controller
          */
 
         $alipay_user_info_share_response = $app::getUserInfoByAccessToken($alipay_system_oauth_token_response['access_token']);
-        if (isset($alipay_user_info_share_response['code']) && $alipay_user_info_share_response['code']==40006 ){
+        if (isset($alipay_user_info_share_response['code']) && $alipay_user_info_share_response['code'] == 40006) {
             exit('ISV权限不足，建议在开发者中心检查对应功能是否已经添加');
         }
 
@@ -50,11 +51,13 @@ class AuthController extends Controller
                 'user_id' => $alipay_user_info_share_response['user_id'],
                 'nick_name' => $alipay_user_info_share_response['nick_name'],
                 'avatar' => $alipay_user_info_share_response['avatar'],
+                'type' => '0'
             ]
         );
 
-//        $token = Auth::guard('api')->fromUser($usermsg);
-//        dd($token);
+        $token = Auth::guard('api')->fromUser($usermsg);
+
+        return response()->json('token', 'Bearer ' . $token);
 
         /**
          * 执行成功后 $alipay_user_info_share_response => 可以得到如下(按照需要存入数据库中)
@@ -75,25 +78,18 @@ class AuthController extends Controller
     }
 
 
-
     //个人页面，更改备考科目
-    public function Personal(Request $request){
-        $data=$request->all();
-        $newtype=$data['type'];
+    public function Personal(Request $request)
+    {
+        $data = $request->all();
+        $newtype = $data['type'];
         $userInfo = Auth::guard('api')->user();
-        $usermsg=User::where('user_id','=',$userInfo)->updateOrCreate(
-            ['type'=>$newtype]
+        $usermsg = User::where('user_id', '=', $userInfo)->updateOrCreate(
+            ['type' => $newtype]
         );
-        if ($usermsg){
+        if ($usermsg) {
             return response()->json('50001');
         }
-    }
-
-
-    public function test()
-    {
-        $userInfo = Auth::guard('api')->user();
-        dd($userInfo);  // 比如要用到user_id 就可以这样取到 就不用前端传user_id 这东西
     }
 
 }
