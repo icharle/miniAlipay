@@ -18,6 +18,7 @@ class CreateUserDataModelsTable extends Migration
             $table->string("user_id")->collation("utf8_general_ci");
             $table->string("nick_name")->collation("utf8_general_ci");
             $table->string("avatar")->collation("utf8_general_ci");
+            $table->string("type")->collation("utf8_general_ci");
             $table->timestamps();
         });
     }

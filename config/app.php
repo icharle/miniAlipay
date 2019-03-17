@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Shanghai',
 
     /*
     |--------------------------------------------------------------------------
@@ -164,11 +164,11 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Icharle\Alipaytool\AlipaytoolServiceProvider::class,
-        Barryvdh\Cors\ServiceProvider::class,
         /*
          * Package Service Providers...
          */
-
+        Barryvdh\Cors\ServiceProvider::class,
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         /*
          * Application Service Providers...
          */
