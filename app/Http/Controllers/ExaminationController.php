@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\AfternoonModel;
+
 use App\DzswModel;
 use App\ExaminationModel;
 use App\MediaModel;
@@ -126,7 +126,7 @@ class ExaminationController extends Controller
 
         //根据type id返回对应试题信息
         /* type=
-         * rjsj软件设计师(morning软件设计师上午题目 afternoon软件设计师下午题目）
+         * rjsj软件设计师(morning软件设计师上午题目）
          * dzsw电子商务设计师(上午题)
          * media多媒体应用设计师(上午题)
          * qrs嵌入式系统设计师(上午题)
@@ -147,10 +147,7 @@ class ExaminationController extends Controller
 
         //查找试题信息
         if ($type=='rjsj'){
-            //查找上午试题信息
-            $ques_content = ExaminationModel::where('field', '=', $field)->get(['id', 'question', 'questionImg', 'optiona', 'optionb', 'optionc', 'optiond', 'answer', 'answeranalysis']);
-            //查找下午试题信息
-            $aftques_content = AfternoonModel::where('field', '=', $field)->get();
+            $ques_content = ExaminationModel::where('field', '=', $field)->get();
         }
 
         elseif ($type=='dzsw'){
@@ -242,51 +239,6 @@ class ExaminationController extends Controller
                 return response()->json(["message"=>$all]);
             }
 
-            $afcnt = 0;
-            if ($aftques_content) {
-                foreach ($ques_content as $afvalue) {
-                    if ($afcnt == 0) {
-                        $id = $afvalue->id;
-                        $question = $afvalue->question;
-                        $questionImg=$afvalue->questionImg;
-                        $optionA = $afvalue->optionA;
-                        $optionAanswer = $afvalue->optionAanswer;
-                        $optionAanswerImg = $afvalue->optionAanswerImg;
-                        $optionB = $afvalue->optionB;
-                        $optionBanswer = $afvalue->optionBanswer;
-                        $optionBanswerImg = $afvalue->optionBanswerImg;
-                        $optionC = $afvalue->optionC;
-                        $optionCanswer = $afvalue->optionCanswer;
-                        $optionCanswerImg = $afvalue->optionCanswerImg;
-                        $optionD = $afvalue->optionD;
-                        $optionDanswer = $afvalue->optionDanswer;
-                        $optionDanswerImg = $afvalue->optionDanswerImg;
-                        $optionE = $afvalue->optionE;
-                        $optionEanswer = $afvalue->optionEanswer;
-                        $optionEanswerImg = $afvalue->optionEanswerImg;
-
-                        $all[] = array("id" => $id,
-                            'question' => $question,
-                            'questionImg'=>$questionImg,
-                            'optionA' => $optionA,
-                            'optionAanswer' => $optionAanswer,
-                            'optionAanswerImg' => $optionAanswerImg,
-                            'optionB' => $optionB,
-                            'optionBanswer' => $optionBanswer,
-                            'optionBanswerImg' => $optionBanswerImg,
-                            'optionC' => $optionC,
-                            'optionCanswer' => $optionCanswer,
-                            'optionCanswerImg' => $optionCanswerImg,
-                            'optionD' => $optionD,
-                            'optionDanswer' => $optionDanswer,
-                            'optionDanswerImg' => $optionDanswerImg,
-                            'optionE' => $optionE,
-                            'optionEanswer' => $optionEanswer,
-                            'optionEanswerImg' => $optionEanswerImg,                      );
-                    }
-                }
-                return response()->json(["message"=>$all]);
-            }
         }else{
             return response()->json();
         }
@@ -304,8 +256,6 @@ class ExaminationController extends Controller
         $questiondata = $request->all();
         $choice=$questiondata['option'];
         $questionid=$questiondata['id'];
-//        $field=$questiondata['field'];
-        $rjsj_type=$questiondata['rjsjtype'];
         $userInfo = Auth::guard('api')->user();
 
 
@@ -323,14 +273,8 @@ class ExaminationController extends Controller
 
         //查找试题信息
         if ($type=='rjsj'){
-            if ($rjsj_type=='morning'){
                 //查找上午试题信息
                 $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
-            }if ($rjsj_type=='afternoon'){
-                //查找下午试题信息
-                $optiondata = AfternoonModel::where('id','=',$questionid)->get(['answer']);
-            }
-
         }
 
         if ($type=='dzsw'){

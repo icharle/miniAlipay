@@ -30,7 +30,7 @@ class AuthController extends Controller
         if (isset($alipay_system_oauth_token_response['code']) && $alipay_system_oauth_token_response['code'] == 40002) {
             exit('授权码code无效');
         }
-        echo $alipay_system_oauth_token_response['access_token'];
+  //      echo $alipay_system_oauth_token_response['access_token'];
         /**
          * 执行成功后 $alipay_system_oauth_token_response => 可以得到如下
          * "access_token" => "authusrB6c5094353547498295d29fa707781X89"
