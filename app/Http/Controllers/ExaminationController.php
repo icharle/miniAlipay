@@ -28,7 +28,7 @@ class ExaminationController extends Controller
 {
     function __construct()
     {
-        $this->middleware('refresh.token', ['except' => ['login','QuestionsData']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
+        $this->middleware('refresh.token', ['except' => ['login']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
     }
 
     //倒计时 统计受欢迎题目排行
@@ -53,51 +53,51 @@ class ExaminationController extends Controller
             }
         }
 
+
+
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录各自总值
-        $charts=StatsModel::where('type','=',$type)->select(DB::raw('count(*) as count'))
+        $chartsmax=StatsModel::where('type','=',$type)->select(DB::raw('count(*) as count'))
             ->groupBy('field')
             ->orderBy('count','desc')
             ->limit(5)->get();
 
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录的试卷号
-        $chartsmax=StatsModel::where('type','=',$type)->select('field')
+        $charts=StatsModel::where('type','=',$type)->select('field')
             ->groupBy('field')
             ->orderBy(DB::raw('count(*)'),'desc')
             ->limit(5)
             ->get();
 
         //返回热度前五&倒计时天数
+        $arr=[];
+        $cnt=0;
+        $flag=false;
+        if (isset($charts)||isset($chartsmax)){
 
-        if ($middate > $pretime) {
-            if(isset($chartsmax)){
-                return response()->json([
-                    'countdown'=>$sub,
-                    'maxfield'=>$chartsmax,
-                    'fieldcount'=>$charts
-                ]);
-            }else{
-                return response()->json([
-                    'countdown'=>$sub,
-                    'maxfield'=>'',
-                    'fieldcount'=>''
-                ]);
+            foreach ($charts as $chaval){
+                foreach ($chartsmax as $chamaxval){
+                    if ($cnt==0) {
+                        $arr[] = array("title" => $chaval->field,
+                            'total' => $chamaxval->count,
+                         );
+                    }
+                    $flag=true;
+                }
             }
 
-        } else {
-            if(isset($chartsmax)){
-                return response()->json([
-                    'countdown'=>$sub2,
-                    'maxfield'=>$chartsmax,
-                    'fieldcount'=>$charts
-                ]);
-            }else{
-                return response()->json([
-                    'countdown'=>$sub2,
-                    'maxfield'=>'',
-                    'fieldcount'=>''
-                ]);
-            }
         }
+        if (!$flag){
+            $arr[]=array(
+                'title'=>'暂无',
+                'total'=>'暂无'
+            );
+        }
+
+        return response()->json([
+            'countdown'=>$sub,
+            'list'=>$arr
+        ]);
+
 
     }
 
@@ -110,11 +110,11 @@ class ExaminationController extends Controller
     {
         $data = $request->all();
         $field = $data['field'];
- //       $userInfo = Auth::guard('api')->user();
+        $userInfo = Auth::guard('api')->user();
 
         //查找用户type id
-  //      $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
-        $type_id=User::where('user_id','=','2088122358263891')->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
+ //       $type_id=User::where('user_id','=','2088122358263891')->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -352,10 +352,10 @@ class ExaminationController extends Controller
         }
 
         if($choice==$str){
-            //选择正确，返回'10001'
+            //选择正确，返回'10004'
             return response()->json('10004');
         }else{
-            //选择错误，返回'10002'
+            //选择错误，返回'10005'
             return response()->json('10005');
         }
     }
@@ -374,6 +374,7 @@ class ExaminationController extends Controller
         $field=$request['field'];//套题编号
         $userInfo = Auth::guard('api')->user();//用户id
         $errorcount=$data['errorcount'];//错题数目
+        $time=$request['time']; //用时
 
         //查找用户type id
         $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
@@ -393,6 +394,7 @@ class ExaminationController extends Controller
             'field'=>$field,
             'error_count'=>$errorcount,
             'score'=>$score,
+            'time'=>$time
         ]);
 
         if($stats){
@@ -406,9 +408,9 @@ class ExaminationController extends Controller
     //获取备考科目试题列表
     public function ExamTitle(){
         //get user_id
- //       $userInfo = Auth::guard('api')->user();//用户id
+        $userInfo = Auth::guard('api')->user();//用户id
         //查找用户type id
-        $type_id=User::where('user_id','=',10000)->get(['type']);
+        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
