@@ -534,44 +534,33 @@ class ExaminationController extends Controller
                 ->get();
         }
 
-        //获取做题用时，错题数目
-        $time_error=StatsModel::where('user_id','=',10000)
-            ->select('time','field','error_count')
-//            ->groupBy('time','field','error_count')
-           ->orderBy('field','desc')
-            ->get();
 
+        $time_error= DB::select('SELECT time,field,error_count FROM stats WHERE user_id = ? AND created_at IN (
+SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',[10000,10000]);
 
-        $timecnt=0;
-        if ($time_error){
-            foreach ($time_error as $timevalue){
-                if ($timecnt==0){
-                    $time = $timevalue->time;
-                    $errorcount = $timevalue->error_count;
-                    $fieldid=$timevalue->field;
-
-                    $all[] = array("fieldid"=>$fieldid,
-                        'time' => $time,
-                        'error_count'=> $errorcount,
+        $arr = [];  // 结果集
+        foreach ($field as $t){  // 遍历所有场次
+            $flag = false;
+            foreach ($time_error as $a) { // 遍历所有已经答题的信息
+                if ($t->field == $a->field){  // 如果有答题记录 使用答题记录的值
+                    $arr[] =array(
+                        'field' => $a->field,
+                        'time' => $a->time,
+                        'error' => $a->error_count,
                     );
+                    $flag = true;
                 }
             }
-
+            if (!$flag){  // 如果不存在答题记录 使用0
+                $arr[] =array(
+                    'field' => $t->field,
+                    'time' => '00:00',
+                    'error' => '0',
+                );
+            }
         }
 
-
-        if(isset($field)) {
-            if ($time_error) {
-                return response()->json([
-                    'title' => $field,
-                    'fieldmessage'=>$all
-                ]);
-            }else{
-                return response()->json([
-                    'title' => $field,
-                ]);
-            }
-         }
+        return response()->json($arr);
 
 
     }

@@ -25,7 +25,7 @@ Route::prefix('auth')->group(function($router) {
     $router->get('ChoiceJudge', 'ExaminationController@ChoiceJudge');
     $router->post('ScoreStats', 'ExaminationController@ScoreStats');
     $router->post('Personal', 'ExaminationController@Personal');
-  //  $router->get('ExamTitle', 'ExaminationController@ExamTitle');
+    $router->get('ExamTitle', 'ExaminationController@ExamTitle');
 });
 
 Route::middleware('refresh.token')->group(function($router) {
