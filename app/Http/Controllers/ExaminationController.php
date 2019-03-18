@@ -544,6 +544,7 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
             foreach ($time_error as $a) { // 遍历所有已经答题的信息
                 if ($t->field == $a->field){  // 如果有答题记录 使用答题记录的值
                     $arr[] =array(
+                        'title' => $this->changeToTitle($a->field),
                         'field' => $a->field,
                         'time' => $a->time,
                         'error' => $a->error_count,
@@ -553,6 +554,7 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
             }
             if (!$flag){  // 如果不存在答题记录 使用0
                 $arr[] =array(
+                    'title' => $this->changeToTitle($a->field),
                     'field' => $t->field,
                     'time' => '00:00',
                     'error' => '0',
@@ -561,8 +563,14 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
         }
 
         return response()->json($arr);
+    }
 
-
+    // 通过field转成具体中文
+    public function changeToTitle($field)
+    {
+        $year = substr($field,0,4);
+        $msg = substr($field,4,1) == "1" ? "上半年" : "下半年";
+        return $year ."年" .$msg;
     }
 
 }
