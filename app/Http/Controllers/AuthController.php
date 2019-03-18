@@ -58,7 +58,8 @@ class AuthController extends Controller
         $token = Auth::guard('api')->fromUser($usermsg);
 
         return response()->json([
-            'token' => "Bearer " . $token
+            'token' => "Bearer " . $token,
+            'type' => $usermsg->type
         ]);
 
         /**
