@@ -556,7 +556,7 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
             }
             if (!$flag){  // 如果不存在答题记录 使用0
                 $arr[] =array(
-                    'title' => $this->changeToTitle($a->field),
+                    'title' => $this->changeToTitle($t->field),
                     'field' => $t->field,
                     'time' => '00:00',
                     'error' => '0',
