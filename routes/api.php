@@ -25,6 +25,7 @@ Route::prefix('auth')->group(function($router) {
     $router->get('ChoiceJudge', 'ExaminationController@ChoiceJudge');
     $router->post('ScoreStats', 'ExaminationController@ScoreStats');
     $router->post('Personal', 'ExaminationController@Personal');
+  //  $router->get('ExamTitle', 'ExaminationController@ExamTitle');
 });
 
 Route::middleware('refresh.token')->group(function($router) {
@@ -39,6 +40,8 @@ Route::group(['middleware'=>'api'],function(){
     Route::any('Charts',['uses'=>'ExaminationController@Charts']);
     Route::any('ScoreStats',['uses'=>'ExaminationController@ScoreStats']);
     Route::any('Personal',['uses'=>'AuthController@Personal']);
+    Route::get('ExamTitle', ['uses'=>'ExaminationController@ExamTitle']);
+
 });
 
 

@@ -28,7 +28,7 @@ class ExaminationController extends Controller
 {
     function __construct()
     {
-        $this->middleware('refresh.token', ['except' => ['login']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
+        $this->middleware('refresh.token', ['except' => ['login','QuestionsData']]);  // 多个方法可以这样写 ['login','xxxx']   这样就会拦截出login方法
     }
 
     //倒计时 统计受欢迎题目排行
@@ -110,10 +110,11 @@ class ExaminationController extends Controller
     {
         $data = $request->all();
         $field = $data['field'];
-        $userInfo = Auth::guard('api')->user();
+ //       $userInfo = Auth::guard('api')->user();
 
         //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
+  //      $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
+        $type_id=User::where('user_id','=','2088122358263891')->get(['type']);
         //转字符串
         $typecnt=0;
         if ($type_id){
@@ -399,6 +400,180 @@ class ExaminationController extends Controller
         }else{
             return response()->json('30002');
         }
+    }
+
+
+    //获取备考科目试题列表
+    public function ExamTitle(){
+        //get user_id
+ //       $userInfo = Auth::guard('api')->user();//用户id
+        //查找用户type id
+        $type_id=User::where('user_id','=',10000)->get(['type']);
+        //转字符串
+        $typecnt=0;
+        if ($type_id){
+            foreach ($type_id as $value){
+                if ($typecnt==0){
+                    $type=$value->type;
+                }
+            }
+        }
+
+        //查找试题field
+        if ($type=='rjsj'){
+            //查找上午试题信息
+            $field = ExaminationModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+
+        }
+
+        if ($type=='dzsw'){
+            $field = DzswModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=="media"){
+            $field = MediaModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='qrs'){
+            $field= QrsModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='rjpcs'){
+            $field = RjpcsModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='sjk'){
+            $field = SjkModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='wlgh'){
+            $field = WlghModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=="wl"){
+            $field = WlModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xtfx'){
+            $field = XtfxModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xtgh'){
+            $field = XtghModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xtjc'){
+            $field = XtjcModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xtjg'){
+            $field = XtjgModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xxaq'){
+            $field = XxaqModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xx'){
+            $field = XxModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xxxt'){
+            $field = XxxtModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        if ($type=='xxxtxm'){
+            $field = XxxtxmModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        //获取做题用时，错题数目
+        $time_error=StatsModel::where('user_id','=',10000)
+            ->select('time','field','error_count')
+//            ->groupBy('time','field','error_count')
+           ->orderBy('field','desc')
+            ->get();
+
+
+        $timecnt=0;
+        if ($time_error){
+            foreach ($time_error as $timevalue){
+                if ($timecnt==0){
+                    $time = $timevalue->time;
+                    $errorcount = $timevalue->error_count;
+                    $fieldid=$timevalue->field;
+
+                    $all[] = array("fieldid"=>$fieldid,
+                        'time' => $time,
+                        'error_count'=> $errorcount,
+                    );
+                }
+            }
+
+        }
+
+
+        if(isset($field)) {
+            if ($time_error) {
+                return response()->json([
+                    'title' => $field,
+                    'fieldmessage'=>$all
+                ]);
+            }else{
+                return response()->json([
+                    'title' => $field,
+                ]);
+            }
+         }
+
+
     }
 
 }

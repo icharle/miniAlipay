@@ -18,3 +18,4 @@ Route::get('test','TestController@test');
 
 Route::post('CountDown',['uses'=>'ExaminationController@CountDown']);
 Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
+Route::any('ExamTitle',['uses'=>'ExaminationController@ExamTitle']);
