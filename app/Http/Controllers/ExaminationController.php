@@ -77,7 +77,7 @@ class ExaminationController extends Controller
             foreach ($charts as $chaval){
                 foreach ($chartsmax as $chamaxval){
                     if ($cnt==0) {
-                        $arr[] = array("title" => $chaval->field,
+                        $arr[] = array("title" => $chaval->field->this->changeToTitle(),
                             'total' => $chamaxval->count,
                          );
                     }
@@ -88,15 +88,22 @@ class ExaminationController extends Controller
         }
         if (!$flag){
             $arr[]=array(
-                'title'=>'暂无',
-                'total'=>'暂无'
+                'title'=>'',
+                'total'=>''
             );
         }
+        if ($middate > $pretime){
+            return response()->json([
+                'countdown'=>$sub,
+                'list'=>$arr
+            ]);
+        }else{
+            return response()->json([
+                'countdown'=>$sub2,
+                'list'=>$arr
+            ]);
+        }
 
-        return response()->json([
-            'countdown'=>$sub,
-            'list'=>$arr
-        ]);
 
 
     }
