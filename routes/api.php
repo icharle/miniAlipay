@@ -24,7 +24,7 @@ Route::prefix('auth')->group(function($router) {
     $router->post('QuestionsData', 'ExaminationController@QuestionsData');
     $router->get('ChoiceJudge', 'ExaminationController@ChoiceJudge');
     $router->post('ScoreStats', 'ExaminationController@ScoreStats');
-    $router->post('Personal', 'ExaminationController@Personal');
+    $router->post('Personal', 'AuthController@Personal');
     $router->get('ExamTitle', 'ExaminationController@ExamTitle');
 });
 

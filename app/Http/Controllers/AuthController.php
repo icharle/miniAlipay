@@ -49,9 +49,9 @@ class AuthController extends Controller
         $usermsg = User::updateOrCreate(   // 用户多次登录 用户存在时候就更新 不存在的时候就插入
             [
                 'user_id' => $alipay_user_info_share_response['user_id'],
-                'nick_name' => $alipay_user_info_share_response['nick_name'],
+            ],
+            ['nick_name' => $alipay_user_info_share_response['nick_name'],
                 'avatar' => $alipay_user_info_share_response['avatar'],
-                'type' => '0'
             ]
         );
 
@@ -90,7 +90,8 @@ class AuthController extends Controller
         $data = $request->all();
         $newtype = $data['type'];
         $userInfo = Auth::guard('api')->user();
-        $usermsg = User::where('user_id', '=', $userInfo)->updateOrCreate(
+        $usermsg = User::where('user_id', '=', $userInfo['user_id'])->updateOrCreate(
+            ['user_id'=>$userInfo['user_id']],
             ['type' => $newtype]
         );
         if ($usermsg) {
