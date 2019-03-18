@@ -47,9 +47,12 @@ class AuthController extends Controller
         }
 
         $usermsg = User::updateOrCreate(   // 用户多次登录 用户存在时候就更新 不存在的时候就插入
-            ['user_id' => $alipay_user_info_share_response['user_id']],
-            ['nick_name' => $alipay_user_info_share_response['nick_name'],
-                'avatar' => $alipay_user_info_share_response['avatar']]
+            [
+                'user_id' => $alipay_user_info_share_response['user_id'],
+                'nick_name' => $alipay_user_info_share_response['nick_name'],
+                'avatar' => $alipay_user_info_share_response['avatar'],
+                'type' => '0'
+            ]
         );
 
         $token = Auth::guard('api')->fromUser($usermsg);
@@ -77,6 +80,10 @@ class AuthController extends Controller
     }
 
 
+    /*
+     * 6
+     */
+
     //个人页面，更改备考科目
     public function Personal(Request $request)
     {
@@ -87,7 +94,7 @@ class AuthController extends Controller
             ['type' => $newtype]
         );
         if ($usermsg) {
-            return response()->json('50001');
+            return response()->json('60001');
         }
     }
 

@@ -28,29 +28,3 @@ Route::prefix('auth')->group(function($router) {
     $router->get('ExamTitle', 'ExaminationController@ExamTitle');
 });
 
-Route::middleware('refresh.token')->group(function($router) {
-    $router->get('profile','UserController@profile');
-});
-
-Route::group(['middleware'=>'api'],function(){
-    Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
-    Route::any('ExamTitle',['uses'=>'ExaminationController@ExamTitle']);
-    Route::any('QuestionsData',['uses'=>'ExaminationController@QuestionsData']);
-    Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
-    Route::any('Charts',['uses'=>'ExaminationController@Charts']);
-    Route::any('ScoreStats',['uses'=>'ExaminationController@ScoreStats']);
-    Route::any('Personal',['uses'=>'AuthController@Personal']);
-    Route::get('ExamTitle', ['uses'=>'ExaminationController@ExamTitle']);
-
-});
-
-
-// 给需要跨域的路由增加cors中间件
-Route::group(['middleware' => 'cors'], function(Router $router){
-    Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
-    Route::any('ExamTitle',['uses'=>'ExaminationController@ExamTitle']);
-    Route::any('QuestionsData',['uses'=>'ExaminationController@QuestionsData']);
-    Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
-    Route::any('Charts',['uses'=>'ExaminationController@Charts']);
-
-});
