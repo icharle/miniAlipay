@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DzswModel;
 use App\ExaminationModel;
+use App\FeekBackModel;
 use App\MediaModel;
 use App\QrsModel;
 use App\RjpcsModel;
@@ -110,7 +111,7 @@ class ExaminationController extends Controller
         //查找用户type id
         $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
 
-        $type = $userInfo->type;  // 直接获取就可以了  搞这么复杂干啥
+        $type = $userInfo->type;  // 直接获取就可以了
 
         //根据type id返回对应试题信息
         /* type=
@@ -267,8 +268,7 @@ class ExaminationController extends Controller
     public function ExamTitle(){
         //get user_id
         $userInfo = Auth::guard('api')->user();//用户id
-
-        $type = $userInfo->type;  // 直接获取就可以了  搞这么复杂干啥
+        $type = $userInfo->type;  // 直接获取就可以了
         $user_id = $userInfo['user_id']; // 用户ID
 
         //查找试题field
@@ -427,6 +427,38 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
         $year = substr($field,0,4);
         $msg = substr($field,4,1) == "1" ? "上半年" : "下半年";
         return $year ."年" .$msg;
+    }
+
+
+    /*
+     * '70001'=>反馈成功
+     * '70004'=>反馈异常，请重新提交
+     * '70003'=>反馈不能为空
+     */
+    //用户反馈
+    public function FeekBack(Request $request){
+
+        $data=$request->all();
+        //获取用户user_id
+        $userInfo = Auth::guard('api')->user();
+        //获取前端传来的反馈意见值
+        $feekback=$data['feekback'];
+
+        if ($feekback){
+            $addcontent=FeekBackModel::create([
+                'user_id'=>$userInfo['user_id'],
+                'content'=>$feekback
+            ]);
+       }else{
+            return response()->json('70003');
+        }
+
+       if ($addcontent){
+            return response()->json('70001');
+       }else{
+            return response()->json('70004');
+       }
+
     }
 
 }

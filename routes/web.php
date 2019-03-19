@@ -16,6 +16,4 @@ Route::get('/', function () {
 });
 Route::get('test','TestController@test');
 
-Route::post('CountDown',['uses'=>'ExaminationController@CountDown']);
-Route::any('ChoiceJudge',['uses'=>'ExaminationController@ChoiceJudge']);
-Route::any('CountDown',['uses'=>'ExaminationController@CountDown']);
+Route::post('FeekBack',['uses'=>'ExaminationController@FeekBack']);
