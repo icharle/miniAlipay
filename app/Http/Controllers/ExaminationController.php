@@ -269,6 +269,7 @@ class ExaminationController extends Controller
         $userInfo = Auth::guard('api')->user();//用户id
 
         $type = $userInfo->type;  // 直接获取就可以了  搞这么复杂干啥
+        $user_id = $userInfo['user_id']; // 用户ID
 
         //查找试题field
         if ($type=='rjsj'){
@@ -391,7 +392,7 @@ class ExaminationController extends Controller
 
 
             $time_error= DB::select('SELECT time,field,error_count FROM stats WHERE user_id = ? AND created_at IN (
-SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',[10000,10000]);
+SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',[$user_id,$user_id]);
 
         $arr = [];  // 结果集
         foreach ($field as $t){  // 遍历所有场次
