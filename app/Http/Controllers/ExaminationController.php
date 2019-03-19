@@ -242,13 +242,14 @@ class ExaminationController extends Controller
         $score=$request['score'];//总分
         $field=$request['field'];//套题编号
         $userInfo = Auth::guard('api')->user();//用户id
-        $errorcount=$data['errorcount'];//错题数目
+        $errorcount=$data['errorcount'];//错题数
         $time=$request['time']; //用时
 
         $stats=StatsModel::create([
-            'user_id'=>$userInfo,
+            'user_id'=>$userInfo['user_id'],
             'statistical_error' => $errorques,
             'field'=>$field,
+            'type'=>$userInfo['type'],
             'error_count'=>$errorcount,
             'score'=>$score,
             'time'=>$time
