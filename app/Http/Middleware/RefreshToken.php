@@ -35,6 +35,7 @@ class RefreshToken extends BaseMiddleware
                 $token = JWTAuth::refresh(JWTAuth::getToken());
                 JWTAuth::setToken($token);
                 $request->user = JWTAuth::authenticate($token);
+                $request->headers->set('Authorization','Bearer '.$token); // token被刷新之后，保证本次请求在controller中需要根据token调取登录用户信息能够执行成功
             }catch (JWTException $exception){
                 throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());
             }
