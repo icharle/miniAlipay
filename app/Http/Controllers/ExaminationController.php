@@ -35,25 +35,19 @@ class ExaminationController extends Controller
     public function CountDown()
     {
         $pretime = time();
-        $examtime1 = strtotime('2019-5-25');
-        $examtime2 = strtotime('2019-10-11');
+        $examtime1 = strtotime('2019-5-25');                // 到时间手动改吧
+        // todo 一般软考上半年都在5月25号  下半年都在11月10号   通过自动判断确定那一次考试
         $sub = ceil(($examtime1 - $pretime) / 86400);
-        $sub2 = ceil(($examtime2 - $pretime) / 86400);
-        $middate = strtotime('2019-06-01 00:00:00');
         $userInfo = Auth::guard('api')->user();
-        //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
-        //转字符串
-        $typecnt=0;
-        if ($type_id){
-            foreach ($type_id as $value){
-                if ($typecnt==0){
-                    $type=$value->type;
-                }
-            }
+
+        $type = $userInfo->type;  // 直接获取就可以了  搞这么复杂干啥
+
+        if ($type == '0') {  // 即 未选择备考科目的时候直接返回倒计时
+            return response()->json([
+                'countdown'=>$sub,
+                'list'=>[]
+            ]);
         }
-
-
 
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录各自总值
         $chartsmax=StatsModel::where('type','=',$type)->select(DB::raw('count(*) as count'))
@@ -77,7 +71,7 @@ class ExaminationController extends Controller
             foreach ($charts as $chaval){
                 foreach ($chartsmax as $chamaxval){
                     if ($cnt==0) {
-                        $arr[] = array("title" => $chaval->field->this->changeToTitle(),
+                        $arr[] = array("title" => $this->changeToTitle($chaval->field),
                             'total' => $chamaxval->count,
                          );
                     }
@@ -86,23 +80,17 @@ class ExaminationController extends Controller
             }
 
         }
-        if (!$flag){
-            $arr[]=array(
-                'title'=>'',
-                'total'=>''
-            );
-        }
-        if ($middate > $pretime){
-            return response()->json([
-                'countdown'=>$sub,
-                'list'=>$arr
-            ]);
-        }else{
-            return response()->json([
-                'countdown'=>$sub2,
-                'list'=>$arr
-            ]);
-        }
+//        if (!$flag){
+//            $arr[]=array(
+//                'title'=>'',
+//                'total'=>''
+//            );
+//        }
+
+        return response()->json([
+            'countdown'=>$sub,
+            'list'=>$arr
+        ]);
 
 
 
@@ -121,16 +109,8 @@ class ExaminationController extends Controller
 
         //查找用户type id
         $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
- //       $type_id=User::where('user_id','=','2088122358263891')->get(['type']);
-        //转字符串
-        $typecnt=0;
-        if ($type_id){
-            foreach ($type_id as $value){
-                if ($typecnt==0){
-                    $type=$value->type;
-                }
-            }
-        }
+
+        $type = $userInfo->type;  // 直接获取就可以了  搞这么复杂干啥
 
         //根据type id返回对应试题信息
         /* type=
@@ -216,6 +196,8 @@ class ExaminationController extends Controller
 
         elseif ($type=='xxxtxm'){
             $ques_content = XxxtxmModel::where('field', '=', $field)->get();
+        } else {
+            return response()->json();  // 未选择备考科目直接返回空 防止出现500不友好错误
         }
 
         if (isset($field)){
@@ -253,126 +235,6 @@ class ExaminationController extends Controller
 
     }
 
-
-
-
-
-
-    //选择题判断
-    public function ChoiceJudge(Request $request)
-    {
-        $questiondata = $request->all();
-        $choice=$questiondata['option'];
-        $questionid=$questiondata['id'];
-        $userInfo = Auth::guard('api')->user();
-
-
-        //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
-        //转字符串
-        $typecnt=0;
-        if ($type_id){
-            foreach ($type_id as $value){
-                if ($typecnt==0){
-                    $type=$value->type;
-                }
-            }
-        }
-
-        //查找试题信息
-        if ($type=='rjsj'){
-            //查找上午试题信息
-            $optiondata = ExaminationModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='dzsw'){
-            $optiondata = DzswModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=="media"){
-            $optiondata = MediaModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='qrs'){
-            $optiondata= QrsModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='rjpcs'){
-            $optiondata = RjpcsModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='sjk'){
-            $optiondata = SjkModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='wlgh'){
-            $optiondata = WlghModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=="wl"){
-            $optiondata = WlModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xtfx'){
-            $optiondata = XtfxModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xtgh'){
-            $optiondata = XtghModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xtjc'){
-            $optiondata = XtjcModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xtjg'){
-            $optiondata = XtjgModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xxaq'){
-            $optiondata = XxaqModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xx'){
-            $optiondata = XxModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xxxt'){
-            $optiondata = XxxtModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        if ($type=='xxxtxm'){
-            $optiondata = XxxtxmModel::where('id','=',$questionid)->get(['answer']);
-        }
-
-        //获取提交的选择
-        //     $optiondata=ExaminationModel::where('id','=',$questionid)->get(['answer']);
-
-        $str = "";
-        $cnt = 0;
-        if($optiondata) {
-            foreach ($optiondata as $values) {
-                if ($cnt == 0) {
-                    $str = $values->answer;
-                }
-            }
-        }
-
-        if($choice==$str){
-            //选择正确，返回'10004'
-            return response()->json('10004');
-        }else{
-            //选择错误，返回'10005'
-            return response()->json('10005');
-        }
-    }
-
-
-
-
-
-
-
     //试卷提交，做题情况入库
     public function ScoreStats(Request $request){
         $data=$request->all();
@@ -382,18 +244,6 @@ class ExaminationController extends Controller
         $userInfo = Auth::guard('api')->user();//用户id
         $errorcount=$data['errorcount'];//错题数目
         $time=$request['time']; //用时
-
-        //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
-        //转字符串
-        $typecnt=0;
-        if ($type_id){
-            foreach ($type_id as $value){
-                if ($typecnt==0){
-                    $type=$value->type;
-                }
-            }
-        }
 
         $stats=StatsModel::create([
             'user_id'=>$userInfo,
@@ -416,17 +266,8 @@ class ExaminationController extends Controller
     public function ExamTitle(){
         //get user_id
         $userInfo = Auth::guard('api')->user();//用户id
-        //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
-        //转字符串
-        $typecnt=0;
-        if ($type_id){
-            foreach ($type_id as $value){
-                if ($typecnt==0){
-                    $type=$value->type;
-                }
-            }
-        }
+
+        $type = $userInfo->type;  // 直接获取就可以了  搞这么复杂干啥
 
         //查找试题field
         if ($type=='rjsj'){
@@ -438,113 +279,117 @@ class ExaminationController extends Controller
 
         }
 
-        if ($type=='dzsw'){
+        else if ($type=='dzsw'){
             $field = DzswModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=="media"){
+        else if ($type=="media"){
             $field = MediaModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='qrs'){
+        else if ($type=='qrs'){
             $field= QrsModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='rjpcs'){
+        else if ($type=='rjpcs'){
             $field = RjpcsModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='sjk'){
+        else if ($type=='sjk'){
             $field = SjkModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='wlgh'){
+        else if ($type=='wlgh'){
             $field = WlghModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=="wl"){
+        else if ($type=="wl"){
             $field = WlModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xtfx'){
+        else if ($type=='xtfx'){
             $field = XtfxModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xtgh'){
+        else if ($type=='xtgh'){
             $field = XtghModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xtjc'){
+        else if ($type=='xtjc'){
             $field = XtjcModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xtjg'){
+        else if ($type=='xtjg'){
             $field = XtjgModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xxaq'){
+        else if ($type=='xxaq'){
             $field = XxaqModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xx'){
+        else if ($type=='xx'){
             $field = XxModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xxxt'){
+        else if ($type=='xxxt'){
             $field = XxxtModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
-        if ($type=='xxxtxm'){
+        else if ($type=='xxxtxm'){
             $field = XxxtxmModel::select(DB::raw('field'))
                 ->groupBy('field')
                 ->orderBy('field','desc')
                 ->get();
         }
 
+        else {
+            return response()->json();  // 未选择备考科目直接返回空 防止出现500不友好错误
+        }
 
-        $time_error= DB::select('SELECT time,field,error_count FROM stats WHERE user_id = ? AND created_at IN (
+
+            $time_error= DB::select('SELECT time,field,error_count FROM stats WHERE user_id = ? AND created_at IN (
 SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',[10000,10000]);
 
         $arr = [];  // 结果集
