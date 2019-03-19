@@ -56,6 +56,7 @@ class ExaminationController extends Controller
             ->orderBy('count','desc')
             ->limit(5)->get();
 
+
         //此段查询语句返回 stats表中 field 重复次数最多的5条记录的试卷号
         $charts=StatsModel::where('type','=',$type)->select('field')
             ->groupBy('field')
@@ -63,37 +64,18 @@ class ExaminationController extends Controller
             ->limit(5)
             ->get();
 
-        //返回热度前五&倒计时天数
         $arr=[];
-        $cnt=0;
-        $flag=false;
-        if (isset($charts)||isset($chartsmax)){
-
-            foreach ($charts as $chaval){
-                foreach ($chartsmax as $chamaxval){
-                    if ($cnt==0) {
-                        $arr[] = array("title" => $this->changeToTitle($chaval->field),
-                            'total' => $chamaxval->count,
-                         );
-                    }
-                    $flag=true;
-                }
-            }
-
+        foreach($charts as $k=>$v){
+            $arr[] = array(
+                "title" => $this->changeToTitle($v['field']),
+                'total' => $chartsmax[$k]['count'],
+            );
         }
-//        if (!$flag){
-//            $arr[]=array(
-//                'title'=>'',
-//                'total'=>''
-//            );
-//        }
 
         return response()->json([
             'countdown'=>$sub,
             'list'=>$arr
         ]);
-
-
 
     }
 
