@@ -388,6 +388,27 @@ class ExaminationController extends Controller
                 ->get();
         }
 
+        else if ($type=='cxy'){
+            $field = CxyModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        else if ($type=='xxcl'){
+            $field = XxaqModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
+        else if ($type=='wlgl'){
+            $field = WlglModel::select(DB::raw('field'))
+                ->groupBy('field')
+                ->orderBy('field','desc')
+                ->get();
+        }
+
         else {
             return response()->json();  // 未选择备考科目直接返回空 防止出现500不友好错误
         }
