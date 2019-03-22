@@ -26,5 +26,8 @@ Route::prefix('auth')->group(function($router) {
     $router->post('Personal', 'AuthController@Personal');
     $router->get('ExamTitle', 'ExaminationController@ExamTitle');
     $router->post('FeekBack', 'ExaminationController@FeekBack');
+    $router->post('Collection', 'ExaminationController@Collection');
+    $router->post('SearchCollect', 'ExaminationController@SearchCollect');
+    $router->post('DelectCollect', 'ExaminationController@DelectCollect');
 });
 

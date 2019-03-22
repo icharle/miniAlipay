@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\CollectionModel;
+use App\CxyModel;
 use App\DzswModel;
 use App\ExaminationModel;
 use App\FeekBackModel;
@@ -12,12 +14,14 @@ use App\SjkModel;
 use App\StatsModel;
 use App\User;
 use App\WlghModel;
+use App\WlglModel;
 use App\WlModel;
 use App\XtfxModel;
 use App\XtghModel;
 use App\XtjcModel;
 use App\XtjgModel;
 use App\XxaqModel;
+use App\XxclModel;
 use App\XxModel;
 use App\XxxtModel;
 use App\XxxtxmModel;
@@ -90,9 +94,6 @@ class ExaminationController extends Controller
         $field = $data['field'];
         $userInfo = Auth::guard('api')->user();
 
-        //查找用户type id
-        $type_id=User::where('user_id','=',$userInfo['user_id'])->get(['type']);
-
         $type = $userInfo->type;  // 直接获取就可以了
 
         //根据type id返回对应试题信息
@@ -114,72 +115,89 @@ class ExaminationController extends Controller
          * xxxt信息系统管理工程师(上午题)
          * xxxtxm信息系统项目管理师(上午题)
          *
+         * cxy程序员(上午题)
+         * xxcl信息处理技术员
+         * wlgl网络管理员
+         * 信息系统运行管理员
          */
 
         //查找试题信息
         if ($type=='rjsj'){
-            $ques_content = ExaminationModel::where('field', '=', $field)->get();
+            $ques_content = ExaminationModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='dzsw'){
-            $ques_content = DzswModel::where('field', '=', $field)->get();
+            $ques_content = DzswModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='media'){
-            $ques_content = MediaModel::where('field', '=', $field)->get();
+            $ques_content = MediaModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='qrs'){
-            $ques_content = QrsModel::where('field', '=', $field)->get();
+            $ques_content = QrsModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='rjpcs'){
-            $ques_content = RjpcsModel::where('field', '=', $field)->get();
+            $ques_content = RjpcsModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='sjk'){
-            $ques_content = SjkModel::where('field', '=', $field)->get();
+            $ques_content = SjkModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='wlgh'){
-            $ques_content = WlghModel::where('field', '=', $field)->get();
+            $ques_content = WlghModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='wl'){
-            $ques_content = WlModel::where('field', '=', $field)->get();
+            $ques_content = WlModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xtfx'){
-            $ques_content = XtfxModel::where('field', '=', $field)->get();
+            $ques_content = XtfxModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xtgh'){
-            $ques_content = XtghModel::where('field', '=', $field)->get();
+            $ques_content = XtghModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xtjc'){
-            $ques_content = XtjcModel::where('field', '=', $field)->get();
+            $ques_content = XtjcModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xtjg'){
-            $ques_content = XtjgModel::where('field', '=', $field)->get();
+            $ques_content = XtjgModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xxaq'){
-            $ques_content = XxaqModel::where('field', '=', $field)->get();
+            $ques_content = XxaqModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xx'){
-            $ques_content = XxModel::where('field', '=', $field)->get();
+            $ques_content = XxModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xxxt'){
-            $ques_content = XxxtModel::where('field', '=', $field)->get();
+            $ques_content = XxxtModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
         }
 
         elseif ($type=='xxxtxm'){
-            $ques_content = XxxtxmModel::where('field', '=', $field)->get();
-        } else {
+            $ques_content = XxxtxmModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
+        }
+
+        elseif ($type=='cxy'){
+            $ques_content = CxyModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
+        }
+
+        elseif ($type=='xxcl'){
+            $ques_content = XxclModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
+        }
+
+        elseif ($type=='wlgl'){
+            $ques_content = WlglModel::where('field', '=', $field)->orderBy('questionNum','asc')->get();
+        }
+        else {
             return response()->json();  // 未选择备考科目直接返回空 防止出现500不友好错误
         }
 
@@ -196,6 +214,7 @@ class ExaminationController extends Controller
                         $optionc = $val->optionc;
                         $optiond = $val->optiond;
                         $answer = $val->answer;
+                        $questionNum=$val->questionNum;
                         $answeranalysis = $val->answeranalysis;
 
                         $all[] = array("id" => $id,
@@ -206,6 +225,7 @@ class ExaminationController extends Controller
                             'optionc' => $optionc,
                             'optiond' => $optiond,
                             'answer' => $answer,
+                            'questionNum'=>$questionNum,
                             'answeranalysis' => $answeranalysis,);
                     }
                 }
@@ -441,6 +461,86 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
             return response()->json('70004');
        }
 
+    }
+
+
+    /*
+     * 80001=>收藏成功
+     * 80002=>收藏失败或未授权，users表无该用户信息
+     *
+     */
+
+    //收藏功能
+    public function Collection(Request $request){
+        $data=$request->all();
+        $field=$data['field'];
+        $questionid=$data['questionid'];
+        $userInfo = Auth::guard('api')->user();
+        //获取用户备考科目type
+        $type = $userInfo->type;
+
+        //获取users表该用户的id
+        $users=User::where('user_id','=',$userInfo['user_id'])->get(['id']);
+
+        if ($users){
+            foreach ($users as $value){
+                    $user_id=$value->id;
+            }
+        }
+
+        //入库
+       $collection=CollectionModel::create([
+           'user_id'=>$user_id,
+           'field'=>$field,
+           'type'=>$type,
+           'questionNum'=>$questionid
+       ]);
+
+        if ($collection){
+            return response()->json('80001');
+        }else{
+            return response()->json('80002');
+        }
+
+    }
+
+    //查询收藏的题目信息(明日再写)
+    public function SearchCollect(Request $request){
+
+        $userInfo = Auth::guard('api')->user();
+        //获取users表该用户的id
+        $users=User::where('user_id','=',$userInfo['user_id'])->get(['id']);
+
+        if ($users){
+            foreach ($users as $value){
+                $user_id=$value->id;
+            }
+        }
+
+        if ($users){
+            foreach ($users as $value){
+                $user_id=$value->id;
+            }
+        }
+
+        $searchcollection=CollectionModel::where('user_id','=',$user_id)->get();
+
+
+    }
+
+    //删除收藏的题目信息(明日再写))
+    public function DelectCollect(Request $request){
+
+
+        $userInfo = Auth::guard('api')->user();
+        //获取users表该用户的id
+        $users=User::where('user_id','=',$userInfo['user_id'])->get(['id']);
+
+        if ($users){
+            foreach ($users as $value){
+                $user_id=$value->id;
+            }
+        }
     }
 
 }
