@@ -496,18 +496,12 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
         $data=$request->all();
         $field=$data['field'];
         $questionid=$data['questionid'];
-        $userInfo = Auth::guard('api')->user();
+        $userInfo = Auth::guard('api')->user();  // 使用JWT默认设置了关联user表的了  这么一句相当于查询了一次用户表 因此所有字段都可以获取到
         //获取用户备考科目type
         $type = $userInfo->type;
 
         //获取users表该用户的id
-        $users=User::where('user_id','=',$userInfo['user_id'])->get(['id']);
-
-        if ($users){
-            foreach ($users as $value){
-                    $user_id=$value->id;
-            }
-        }
+        $user_id = $userInfo->id;
 
         //入库
        $collection=CollectionModel::create([
@@ -532,17 +526,8 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
         //获取users表该用户的id
         $users=User::where('user_id','=',$userInfo['user_id'])->get(['id']);
 
-        if ($users){
-            foreach ($users as $value){
-                $user_id=$value->id;
-            }
-        }
-
-        if ($users){
-            foreach ($users as $value){
-                $user_id=$value->id;
-            }
-        }
+        //获取users表该用户的id
+        $user_id = $userInfo->id;
 
         $searchcollection=CollectionModel::where('user_id','=',$user_id)->get();
 
@@ -552,16 +537,10 @@ SELECT MAX(created_at) created_at FROM stats WHERE user_id = ? GROUP BY field)',
     //删除收藏的题目信息(明日再写))
     public function DelectCollect(Request $request){
 
-
         $userInfo = Auth::guard('api')->user();
-        //获取users表该用户的id
-        $users=User::where('user_id','=',$userInfo['user_id'])->get(['id']);
 
-        if ($users){
-            foreach ($users as $value){
-                $user_id=$value->id;
-            }
-        }
+        //获取users表该用户的id
+        $user_id = $userInfo->id;
     }
 
 }
